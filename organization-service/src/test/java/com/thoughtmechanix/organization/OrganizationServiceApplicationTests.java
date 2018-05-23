@@ -1,4 +1,4 @@
-package com.thoughtmechanix.organizationservice;
+package com.thoughtmechanix.organization;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

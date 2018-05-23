@@ -1,9 +1,10 @@
 server:
   port: 8888
+
 spring:
   cloud:
     config:
-      server:
-        git:
+      server: # tells the Spring Cloud configuration server to use a non-filesystem-based backend repository
+        git:  # going to connect to the cloud-based Git repository, GitHub
           uri: https://github.com/brunosc/config-repo-ms-in-action/
-          searchPaths: licensingservice
+          searchPaths: licensingservice,organizationservice

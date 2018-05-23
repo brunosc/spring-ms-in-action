@@ -3,7 +3,7 @@ server:
 
 eureka:
   client:
-    registerWithEureka: false #como este eh o eureka, nao tem necessidade de registrar
-    fetchRegistry: false
+    registerWithEureka: false # tells the service not to register with a Eureka when application starts because this is the Eureka service
+    fetchRegistry: false # dont cache registry information locally
   server:
       waitTimeInMsWhenSyncEmpty: 5
