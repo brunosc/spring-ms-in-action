@@ -27,7 +27,7 @@ public class LicenseService {
     @Autowired
     private OrganizationFeignClient organizationFeignClient;
 
-    @HystrixCommand
+//    @HystrixCommand
     private Organization retrieveOrgInfo(String organizationId) {
         return organizationFeignClient.getOrganization(organizationId);
     }
@@ -50,9 +50,26 @@ public class LicenseService {
 //                    {@HystrixProperty(
 //                            name="execution.isolation.thread.timeoutInMilliseconds",
 //                            value="12000")})
-    @HystrixCommand(fallbackMethod = "buildFallbackLicenseList")
+//    @HystrixCommand(fallbackMethod = "buildFallbackLicenseList")
+//    @HystrixCommand(fallbackMethod = "buildFallbackLicenseList",
+//            commandProperties=
+//                    {@HystrixProperty(
+//                            name="execution.isolation.thread.timeoutInMilliseconds",
+//                            value="10000")})
+//    @HystrixCommand
+    @HystrixCommand(//fallbackMethod = "buildFallbackLicenseList",
+            threadPoolKey = "licenseByOrgThreadPool",
+            threadPoolProperties =
+                    {@HystrixProperty(name = "coreSize",value="30"),
+                            @HystrixProperty(name="maxQueueSize", value="10")},
+            commandProperties={
+                    @HystrixProperty(name="circuitBreaker.requestVolumeThreshold", value="10"),
+                    @HystrixProperty(name="circuitBreaker.errorThresholdPercentage", value="75"), // porcentagem de chamadas que devem falhar
+                    @HystrixProperty(name="circuitBreaker.sleepWindowInMilliseconds", value="7000"),
+                    @HystrixProperty(name="metrics.rollingStats.timeInMilliseconds", value="15000"),
+                    @HystrixProperty(name="metrics.rollingStats.numBuckets", value="5")}
+    )
     public List<License> getLicensesByOrg(String organizationId){
-        randomlyRunLong();
         return licenseRepository.findByOrganizationId( organizationId );
     }
 
