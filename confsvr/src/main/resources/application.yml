@@ -7,4 +7,4 @@ spring:
       server:
         git:
           uri: https://github.com/brunosc/config-repo-ms-in-action/
-          searchPaths: licensingservice,organizationservice
+          searchPaths: licensingservice,organizationservice,zuulservice,authenticationservice
