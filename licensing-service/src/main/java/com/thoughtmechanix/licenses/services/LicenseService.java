@@ -41,8 +41,7 @@ public class LicenseService {
                 .withOrganizationName( org.getName())
                 .withContactName( org.getContactName())
                 .withContactEmail( org.getContactEmail() )
-                .withContactPhone( org.getContactPhone() )
-                .withComment(config.getExampleProperty());
+                .withContactPhone( org.getContactPhone() );
     }
 
 //    @HystrixCommand(
