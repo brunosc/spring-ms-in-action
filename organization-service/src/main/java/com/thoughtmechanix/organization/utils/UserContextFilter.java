@@ -16,15 +16,23 @@ public class UserContextFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+        logger.debug("Entering the UserContextFilter for the organization service");
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        logger.debug("I am entering the organization service id with auth token: ", httpServletRequest.getHeader("Authorization"));
 
-        UserContextHolder.getContext().setCorrelationId(  httpServletRequest.getHeader(UserContext.CORRELATION_ID) );
-        UserContextHolder.getContext().setUserId(httpServletRequest.getHeader(UserContext.USER_ID));
-        UserContextHolder.getContext().setAuthToken(httpServletRequest.getHeader(UserContext.AUTH_TOKEN));
-        UserContextHolder.getContext().setOrgId(httpServletRequest.getHeader(UserContext.ORG_ID));
 
-        logger.debug("UserContextFilter Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
+        String correlationId = httpServletRequest.getHeader(UserContext.CORRELATION_ID);
+        String userId = httpServletRequest.getHeader(UserContext.USER_ID);
+        String authToken = httpServletRequest.getHeader(UserContext.AUTH_TOKEN);
+        String orgId = httpServletRequest.getHeader(UserContext.ORG_ID);
 
+        logger.debug("***** I am entering the organization service id with correlation id: {}" ,correlationId);
+        UserContextHolder.getContext().setCorrelationId(correlationId);
+        UserContextHolder.getContext().setUserId(userId);
+        UserContextHolder.getContext().setAuthToken(authToken);
+        UserContextHolder.getContext().setOrgId(orgId);
+
+        logger.debug("Exiting the UserContextFilter");
         chain.doFilter(httpServletRequest, response);
 
     }
