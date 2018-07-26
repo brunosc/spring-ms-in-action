@@ -8,3 +8,14 @@ spring:
         git:
           uri: https://github.com/brunosc/config-repo-ms-in-action/
           searchPaths: licensingservice,organizationservice,zuulservice,authenticationservice
+
+---
+spring:
+  profiles: dev
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: git@github.com:brunosc/config-repo-ms-in-action.git
