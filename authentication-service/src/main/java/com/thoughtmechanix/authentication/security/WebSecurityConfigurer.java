@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-    // these beans are injected into the OAuth2Config
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {

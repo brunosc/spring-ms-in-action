@@ -1,6 +1,18 @@
 server:
   port: 8085
 
+spring:
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination:  orgChangeTopic
+          content-type: application/json
+      kafka:
+        binder:
+          zkNodes: localhost
+          brokers: localhost
+
 eureka:
   instance:
     preferIpAddress: true #registra IP ao inves do nome

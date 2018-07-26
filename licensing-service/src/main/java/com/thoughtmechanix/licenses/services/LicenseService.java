@@ -7,6 +7,9 @@ import com.thoughtmechanix.licenses.config.ServiceConfig;
 import com.thoughtmechanix.licenses.model.License;
 import com.thoughtmechanix.licenses.model.Organization;
 import com.thoughtmechanix.licenses.repository.LicenseRepository;
+import com.thoughtmechanix.licenses.repository.OrganizationRedisRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,8 @@ import java.util.UUID;
 @Service
 public class LicenseService {
 
+    private final static Logger logger = LoggerFactory.getLogger(LicenseService.class);
+
     @Autowired
     private ServiceConfig config;
 
@@ -27,9 +32,32 @@ public class LicenseService {
     @Autowired
     private OrganizationFeignClient organizationFeignClient;
 
+    @Autowired
+    private OrganizationRedisRepository orgRedisRepo;
+
+    private Organization checkRedisCache(String organizationId) {
+        try {
+            return orgRedisRepo.findOrganization(organizationId);
+        } catch (Exception e) {
+            logger.error("Error encountered while trying to retrieve organization {} check Redis Cache.Exception {}", organizationId, e);
+            return null;
+        }
+    }
+
 //    @HystrixCommand
     private Organization retrieveOrgInfo(String organizationId) {
-        return organizationFeignClient.getOrganization(organizationId);
+
+        Organization org = checkRedisCache(organizationId);
+
+        if (org != null) {
+            logger.info("Successfully retrieved an organization {} from redis cache: {}", organizationId, org);
+            return org;
+        }
+
+        Organization organization = organizationFeignClient.getOrganization(organizationId);
+        cacheOrganization(organization);
+
+        return organization;
     }
 
     public License getLicense(String organizationId, String licenseId) {
@@ -41,8 +69,7 @@ public class LicenseService {
                 .withOrganizationName( org.getName())
                 .withContactName( org.getContactName())
                 .withContactEmail( org.getContactEmail() )
-                .withContactPhone( org.getContactPhone() )
-                .withComment(config.getExampleProperty());
+                .withContactPhone( org.getContactPhone() );
     }
 
 //    @HystrixCommand(
@@ -84,6 +111,14 @@ public class LicenseService {
 
     public void deleteLicense(License license){
         licenseRepository.delete( license.getLicenseId());
+    }
+
+    private void cacheOrganization(Organization org) {
+        try {
+            orgRedisRepo.saveOrganization(org);
+        } catch (Exception e) {
+            logger.error("Unable to cache organization {} in Redis. Exception: {}", org.getId(), e);
+        }
     }
 
     private List<License> buildFallbackLicenseList(String organizationId){
