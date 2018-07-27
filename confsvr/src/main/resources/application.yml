@@ -12,8 +12,6 @@ spring:
 ---
 spring:
   profiles: dev
-
-spring:
   cloud:
     config:
       server:
